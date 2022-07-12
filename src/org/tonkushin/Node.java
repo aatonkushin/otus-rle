@@ -20,4 +20,25 @@ public class Node {
         this.bit0 = bit0;
         this.bit1 = bit1;
     }
+
+    public int getFreq() {
+        return freq;
+    }
+
+    public Node getBit0() {
+
+        return bit0;
+    }
+
+    public Node getBit1() {
+        return bit1;
+    }
+
+    public byte getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(byte symbol) {
+        this.symbol = symbol;
+    }
 }

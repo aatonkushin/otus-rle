@@ -51,7 +51,7 @@ public class Main {
                 byte[] compressed = huffman.compress(readFile(sourceFilename));
                 writeFile(destFileName, compressed);
             } else if (DECODE.equals(mode)) {
-                byte[] decompressed = huffman.compress(readFile(sourceFilename));
+                byte[] decompressed = huffman.decompress(readFile(sourceFilename));
                 writeFile(destFileName, decompressed);
             } else {
                 printHelp();
