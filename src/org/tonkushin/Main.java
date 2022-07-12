@@ -1,42 +1,62 @@
 package org.tonkushin;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 // Пример строки с аргументами
-//encode /home/anton/test.txt /home/anton/test.rle
-//decode /home/anton/test.rle /home/anton/test_decoded.txt
+//encode rle /home/anton/test.txt /home/anton/test.rle
+//decode rle /home/anton/test.rle /home/anton/test_decoded.txt
+
+//encode huffman /home/anton/test.txt /home/anton/test.huffman
+//decode huffman /home/anton/test.huffman /home/anton/test_decoded.txt
 
 public class Main {
     private static String ENCODE = "encode";
     private static String DECODE = "decode";
+    private static String RLE = "rle";
+    private static String HUFFMAN = "huffman";
 
     public static void main(String[] args) throws IOException {
-        if (args.length < 3) {
+        if (args.length < 4) {
             printHelp();
             return;
         }
 
         String mode = args[0];
-        String sourceFilename = args[1];
-        String destFileName = args[2];
+        String method = args[1];
+        String sourceFilename = args[2];
+        String destFileName = args[3];
 
-        if (ENCODE.equals(mode)) {
-            byte[] src = readFile(sourceFilename);
-            byte[] bytes = RunLengthEncoder.encode(src);
-            writeFile(destFileName, bytes);
-            System.out.printf("Файл %s (%d байт) успешно сжат в файл %s (%d байт) \n", sourceFilename, src.length, destFileName, bytes.length);
-        } else if (DECODE.equals(mode)) {
-            byte[] src = readFile(sourceFilename);
-            byte[] bytes = RunLengthEncoder.decode(src);
-            writeFile(destFileName, bytes);
-            System.out.printf("Файл %s (%d байт) успешно распакован в файл %s (%d байт) \n", sourceFilename, src.length, destFileName, bytes.length);
+        // Сжатие RLE
+        if (RLE.equals(method)) {
+            if (ENCODE.equals(mode)) {
+                byte[] src = readFile(sourceFilename);
+                byte[] bytes = RunLengthEncoder.encode(src);
+                writeFile(destFileName, bytes);
+                System.out.printf("Файл %s (%d байт) успешно сжат в файл %s (%d байт) \n", sourceFilename, src.length, destFileName, bytes.length);
+            } else if (DECODE.equals(mode)) {
+                byte[] src = readFile(sourceFilename);
+                byte[] bytes = RunLengthEncoder.decode(src);
+                writeFile(destFileName, bytes);
+                System.out.printf("Файл %s (%d байт) успешно распакован в файл %s (%d байт) \n", sourceFilename, src.length, destFileName, bytes.length);
+            } else {
+                printHelp();
+            }
+        // Сжатие HUFFMAN
+        } else if (HUFFMAN.equals(method)) {
+            Huffman huffman = new Huffman();
+
+            if (ENCODE.equals(mode)) {
+                byte[] compressed = huffman.compress(readFile(sourceFilename));
+                writeFile(destFileName, compressed);
+            } else if (DECODE.equals(mode)) {
+                byte[] decompressed = huffman.compress(readFile(sourceFilename));
+                writeFile(destFileName, decompressed);
+            } else {
+                printHelp();
+            }
+
         } else {
             printHelp();
         }
@@ -45,8 +65,9 @@ public class Main {
     private static void printHelp() {
         System.out.println("Укажите 3 аргумента: ");
         System.out.println("1: Режим сжатия (encode) / распаковки (decode)");
-        System.out.println("2: Путь к исходному файлу");
-        System.out.println("3: Путь к результирующему файлу");
+        System.out.println("2: Алгоритм сжатия (rle) / Хаффман (Huffman)");
+        System.out.println("3: Путь к исходному файлу");
+        System.out.println("4: Путь к результирующему файлу");
     }
 
     private static byte[] readFile(String filename){
